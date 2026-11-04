@@ -179,6 +179,11 @@ def perform(root, args):
         path = task_path(root, args.id)
         if path.exists():
             raise WorkflowError('任务卡已存在，请使用新的任务 ID；不会覆盖旧记录')
+        if args.profile is None:
+            # 只有一个 profile 时没有歧义；多个时让建卡者明确选择，不按顺序猜。
+            if len(project['profiles']) != 1:
+                raise WorkflowError('有多个验证 profile，请用 --profile 指定：' + ', '.join(project['profiles']))
+            args.profile = next(iter(project['profiles']))
         if args.profile not in project['profiles']:
             raise WorkflowError('未知验证 profile')
         for allowed in args.allow:
@@ -328,7 +333,7 @@ def parser():
     start.add_argument('--goal', required=True)
     start.add_argument('--accept', action='append', required=True)
     start.add_argument('--allow', action='append', required=True)
-    start.add_argument('--profile', default='lab')
+    start.add_argument('--profile', help='project.json 只有一个 profile 时可省略')
     start.add_argument('--kind', choices=('feature', 'maintenance'), default='feature')
     start.add_argument('--no-review', action='store_true', help='only for low-risk tasks; recorded in task contract')
     for name in ('check', 'syntax', 'selfcheck', 'status', 'brief', 'doctor', 'snapshot', 'verify', 'ready'):

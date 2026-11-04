@@ -21,6 +21,6 @@ python3 scripts/workflow/workflow.py doctor
 python3 scripts/workflow/workflow.py status
 ```
 
-实现任务用 `start <id> --profile python ...` 建卡，`verify` 先跑工作流自检，再跑 `.workflow/project.json` 里的 `python` profile（当前为标准库 unittest）。运行环境：macOS/Linux，Python 3.11+、Git。
+实现任务用 `start <id> ...` 建卡（只有一个 profile，无需 `--profile`），`verify` 先跑工作流自检，再跑 `.workflow/project.json` 里的 `python` profile（当前为标准库 unittest）。运行环境：macOS/Linux，Python 3.11+、Git。
 
 首次在本目录打开 Codex / Claude Code 时，需要在客户端里确认信任项目 Hooks；信任不会从 coding-workflow 继承。
