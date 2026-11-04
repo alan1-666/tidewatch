@@ -12,6 +12,15 @@
 
 暂不做：L2 订单簿、秒级、实时流、LLM/遗传算法挖掘、Web 看板。
 
+分层、模块职责和时点约定见 [docs/design/architecture.md](docs/design/architecture.md)。
+
+## 本地环境
+
+```sh
+uv sync                 # 建立 .venv
+docker compose up -d    # 本地 ClickHouse，仅集成测试与数据导入需要
+```
+
 ## 开发工作流
 
 Codex 与 Claude Code 共用 `AGENTS.md` 规则，工作流来自 [coding-workflow](https://github.com/alan1-666/coding-workflow)，检查器修改先在那边回归再同步过来。
@@ -21,6 +30,6 @@ python3 scripts/workflow/workflow.py doctor
 python3 scripts/workflow/workflow.py status
 ```
 
-实现任务用 `start <id> ...` 建卡（只有一个 profile，无需 `--profile`），`verify` 先跑工作流自检，再跑 `.workflow/project.json` 里的 `python` profile（当前为标准库 unittest）。运行环境：macOS/Linux，Python 3.11+、Git。
+实现任务用 `start <id> --profile python|integration ...` 建卡，`verify` 先跑工作流自检，再跑所选 profile：`python` 是不需要 ClickHouse 的 pytest，`integration` 只跑标记为 integration 的测试。运行环境：macOS/Linux，Python 3.12+、uv、Git，集成测试另需 Docker。
 
 首次在本目录打开 Codex / Claude Code 时，需要在客户端里确认信任项目 Hooks；信任不会从 coding-workflow 继承。

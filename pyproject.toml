@@ -1,0 +1,19 @@
+[project]
+name = "tidewatch"
+version = "0.0.1"
+description = "加密货币量化研究平台"
+requires-python = ">=3.12"
+dependencies = [
+    "clickhouse-connect",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# 拼错的 marker 直接报错，避免集成测试漏进不需要 ClickHouse 的 python profile。
+addopts = "--strict-markers"
+markers = [
+    "integration: 需要本地 ClickHouse（docker compose up -d），只在 integration profile 运行",
+]

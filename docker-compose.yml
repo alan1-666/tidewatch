@@ -1,0 +1,18 @@
+# 本地开发用单节点 ClickHouse。账号只用于本机，端口只绑定 127.0.0.1。
+# 账号只在数据卷首次初始化时生效；改了账号需 docker compose down -v 重建卷。
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.8.33.6@sha256:0152dd511befe6a2c2ef53e930726179669b08116da78500b37c51c96ff5ee77
+    environment:
+      CLICKHOUSE_DB: tidewatch
+      CLICKHOUSE_USER: tidewatch
+      CLICKHOUSE_PASSWORD: tidewatch
+    ports:
+      - "127.0.0.1:8123:8123"
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+
+volumes:
+  clickhouse-data:

@@ -4,13 +4,13 @@
 
 ## 开始工作
 
-- 先读 README、相关源码和 `.workflow/project.json`，执行 `python3 scripts/workflow/workflow.py status`。
+- 先读 README、`docs/design/architecture.md`（分层与时点约定）、相关源码和 `.workflow/project.json`，执行 `python3 scripts/workflow/workflow.py status`。
 - 阅读、问答和设计无需任务卡；实现前用 `start` 固定目标、验收、允许路径、检查 profile，阅读生成的卡。
 - 首次安装本工作流及隔离临时目录里的检查器自测，可在没有业务任务时执行；后续修改工作流使用 maintenance 任务。
 - 未知接口、业务规则、权限或资金语义不能靠猜。明确影响实现的未知项；能独立推进的部分继续，依赖部分记录 blocked。
 - 简单、明确且已授权的修改直接推进；新需求或不可逆动作按实际授权判断，不反复要求确认。
 - 计划与范围明确后记录 `phase implement --note ...`。不要静默扩大任务范围或降低验收标准。
-- 统一入口是 `python3 scripts/workflow/workflow.py <命令>`；本仓库只有一个验证 profile `python`，`start` 无需传 `--profile`。开始或接手先看 `brief`；诊断环境用 `doctor`。`verify` 固定先跑与语言无关的 `selfcheck`（策略、检查器语法、适配器一致性），再跑任务 profile 的业务检查。
+- 统一入口是 `python3 scripts/workflow/workflow.py <命令>`；本仓库有 `python`（单元测试，不需要 ClickHouse）与 `integration`（需本地 ClickHouse）两个验证 profile，`start` 时用 `--profile` 指定。开始或接手先看 `brief`；诊断环境用 `doctor`。`verify` 固定先跑与语言无关的 `selfcheck`（策略、检查器语法、适配器一致性），再跑任务 profile 的业务检查。
 
 ## 按改动选择检查
 
