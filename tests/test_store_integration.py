@@ -1,30 +1,14 @@
-import uuid
 from datetime import datetime, timedelta, timezone
 
-import clickhouse_connect
 import pytest
 
 from tidewatch import store
 
 pytestmark = pytest.mark.integration
 
-# 与 docker-compose.yml 中的本地开发账号一致。
-CONN = dict(host='127.0.0.1', port=8123, username='tidewatch', password='tidewatch')
 KLINE_COLUMNS = ['symbol', 'ts', 'open', 'high', 'low', 'close', 'volume', 'quote_volume', 'trades',
                  'taker_buy_volume', 'taker_buy_quote_volume', 'ingested_at']
 T0 = datetime(2024, 1, 1, tzinfo=timezone.utc)
-
-
-@pytest.fixture
-def client():
-    # 每个用例一个临时库，结束即删，不碰 tidewatch 库里的数据。
-    name = f'tidewatch_test_{uuid.uuid4().hex[:12]}'
-    admin = clickhouse_connect.get_client(**CONN)
-    admin.command(f'CREATE DATABASE {name}')
-    try:
-        yield clickhouse_connect.get_client(**CONN, database=name)
-    finally:
-        admin.command(f'DROP DATABASE IF EXISTS {name}')
 
 
 def kline(ts, close, ingested_at):
@@ -37,10 +21,14 @@ def test_schema_is_idempotent_and_matches_design(client):
     rows = client.query(
         "SELECT name, engine_full, partition_key, sorting_key FROM system.tables "
         "WHERE database = currentDatabase() ORDER BY name").result_rows
-    assert [r[0] for r in rows] == ['funding_rate', 'klines_1m']
-    for name, engine, partition, sorting in rows:
+    tables = {r[0]: r[1:] for r in rows}
+    assert sorted(tables) == ['funding_rate', 'klines_1m', 'symbols']
+    for name in ('funding_rate', 'klines_1m'):
+        engine, partition, sorting = tables[name]
         assert engine.startswith('ReplacingMergeTree(ingested_at)'), name
         assert partition == 'toYYYYMM(ts)' and sorting == 'symbol, ts', name
+    engine, partition, sorting = tables['symbols']
+    assert engine.startswith('ReplacingMergeTree(refreshed_at)') and partition == '' and sorting == 'symbol'
     types = dict(client.query(
         "SELECT name, type FROM system.columns WHERE database = currentDatabase() AND table = 'klines_1m'"
     ).result_rows)

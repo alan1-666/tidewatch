@@ -58,7 +58,7 @@
 
 - 环境：`uv sync` 建立 `.venv`；本地 ClickHouse 用 `docker compose up -d`。
 - `python` profile：`pytest -m "not integration"`，纯函数单元测试，不需要 ClickHouse。
-- `integration` profile：`pytest -m integration`，需要本地 ClickHouse。
+- `integration` profile：先跑上面的单元测试，再跑 `pytest -m integration`，需要本地 ClickHouse。涉及数据库的任务用它。
 
 ## 开发顺序
 

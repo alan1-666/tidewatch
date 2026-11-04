@@ -41,7 +41,21 @@ PARTITION BY toYYYYMM(ts)
 ORDER BY (symbol, ts)
 """
 
-SCHEMA = (KLINES_1M, FUNDING_RATE)
+SYMBOLS = """
+CREATE TABLE IF NOT EXISTS symbols (
+    symbol String,
+    quote LowCardinality(String) COMMENT '计价币；无法识别时为空串',
+    contract LowCardinality(String) COMMENT 'perpetual 或 delivery',
+    first_month Date COMMENT '首个有月度 1m K 线文件的月份（当月 1 日）',
+    last_month Date COMMENT '最后一个有月度 1m K 线文件的月份',
+    delisted UInt8 COMMENT '末月早于全体最新已发布月份',
+    refreshed_at DateTime64(3, 'UTC') DEFAULT now64(3)
+)
+ENGINE = ReplacingMergeTree(refreshed_at)
+ORDER BY symbol
+"""
+
+SCHEMA = (KLINES_1M, FUNDING_RATE, SYMBOLS)
 
 
 def ensure_schema(client):

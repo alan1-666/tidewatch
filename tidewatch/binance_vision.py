@@ -99,21 +99,39 @@ def download(kind, symbol, year, month, cache_dir, fetch=fetch):
     return dest
 
 
+def _s3_list(prefix, fetch, delimiter=None):
+    """跟随分页列举 S3，返回 (公共前缀列表, 对象 key 列表)。"""
+    prefixes, keys, marker = [], [], ''
+    while True:
+        params = {'prefix': prefix, 'marker': marker}
+        if delimiter:
+            params['delimiter'] = delimiter
+        root = ET.fromstring(fetch(f'{LISTING}?{urllib.parse.urlencode(params)}'))
+        page_prefixes = [p.text for p in root.findall(f'{_S3}CommonPrefixes/{_S3}Prefix')]
+        page_keys = [k.text for k in root.findall(f'{_S3}Contents/{_S3}Key')]
+        prefixes += page_prefixes
+        keys += page_keys
+        if root.findtext(f'{_S3}IsTruncated') != 'true':
+            return prefixes, keys
+        next_marker = root.findtext(f'{_S3}NextMarker') or max(page_prefixes + page_keys, default='')
+        # S3 的 marker 按字典序单调递增；不前进就是异常，避免死循环。
+        if not next_marker or next_marker <= marker:
+            raise RuntimeError('S3 清单声称还有下一页，却没有给出更靠后的 marker')
+        marker = next_marker
+
+
 def list_symbols(fetch=fetch):
     """全部 USDT-M 合约（含 USDC 计价、交割合约与已下架合约），按字母排序；筛选交给合约注册表。
 
     官方会保留已下架合约的历史目录，所以按目录列举能避免幸存者偏差。
     """
-    symbols, marker = [], ''
-    while True:
-        query = urllib.parse.urlencode({'delimiter': '/', 'prefix': KLINES_PREFIX, 'marker': marker})
-        root = ET.fromstring(fetch(f'{LISTING}?{query}'))
-        prefixes = [p.text for p in root.findall(f'{_S3}CommonPrefixes/{_S3}Prefix')]
-        symbols += [p.rstrip('/').rsplit('/', 1)[1] for p in prefixes]
-        if root.findtext(f'{_S3}IsTruncated') != 'true':
-            return sorted(symbols)
-        next_marker = root.findtext(f'{_S3}NextMarker') or (prefixes[-1] if prefixes else '')
-        # S3 的 marker 按字典序单调递增；不前进就是异常，避免死循环。
-        if not next_marker or next_marker <= marker:
-            raise RuntimeError('S3 清单声称还有下一页，却没有给出更靠后的 marker')
-        marker = next_marker
+    prefixes, _ = _s3_list(KLINES_PREFIX, fetch, delimiter='/')
+    return sorted(p.rstrip('/').rsplit('/', 1)[1] for p in prefixes)
+
+
+def list_months(symbol, fetch=fetch):
+    """该合约已发布的月度 1m K 线 [(年, 月)]，升序；合约注册表据此得到首末月份。"""
+    folder = monthly_path('klines', symbol, 2000, 1).rsplit('/', 1)[0] + '/'
+    _, keys = _s3_list(folder, fetch)
+    found = (re.search(r'-(\d{4})-(\d{2})\.zip$', key) for key in keys)
+    return sorted({(int(m[1]), int(m[2])) for m in found if m})

@@ -6,8 +6,9 @@
       {"name": "unit-tests", "argv": [".venv/bin/python", "-m", "pytest", "-q", "-m", "not integration"], "timeout": 300}
     ],
     "integration": [
+      {"name": "unit-tests", "argv": [".venv/bin/python", "-m", "pytest", "-q", "-m", "not integration"], "timeout": 300},
       {"name": "integration-tests", "argv": [".venv/bin/python", "-m", "pytest", "-q", "-m", "integration"], "timeout": 600}
     ]
   },
-  "notes": "先 uv sync 建立 .venv。python profile 不需要 ClickHouse；integration profile 需要先 docker compose up -d。未选中任何测试时 pytest 以 5 退出，不会误报通过。"
+  "notes": "先 uv sync 建立 .venv。python profile 不需要 ClickHouse；integration profile 先跑与 python 相同的单元测试，再跑集成测试，需要先 docker compose up -d。未选中任何测试时 pytest 以 5 退出，不会误报通过。"
 }

@@ -30,6 +30,6 @@ python3 scripts/workflow/workflow.py doctor
 python3 scripts/workflow/workflow.py status
 ```
 
-实现任务用 `start <id> --profile python|integration ...` 建卡，`verify` 先跑工作流自检，再跑所选 profile：`python` 是不需要 ClickHouse 的 pytest，`integration` 只跑标记为 integration 的测试。运行环境：macOS/Linux，Python 3.12+、uv、Git，集成测试另需 Docker。
+实现任务用 `start <id> --profile python|integration ...` 建卡，`verify` 先跑工作流自检，再跑所选 profile：`python` 是不需要 ClickHouse 的 pytest，`integration` 先跑同样的单元测试，再跑标记为 integration 的测试。运行环境：macOS/Linux，Python 3.12+、uv、Git，集成测试另需 Docker。
 
 首次在本目录打开 Codex / Claude Code 时，需要在客户端里确认信任项目 Hooks；信任不会从 coding-workflow 继承。
