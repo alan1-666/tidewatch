@@ -1,0 +1,26 @@
+# tidewatch
+
+加密货币量化研究平台：行情接入 → 多粒度行情库 → 因子挖掘 → 因子层 → 回测 → 绩效看板。
+
+## MVP 范围
+
+- 标的：币安 USDT 永续合约，按成交额取前 50～100，已下架合约保留（避免幸存者偏差）
+- 数据：data.binance.vision 历史批量数据；只存 1 分钟线与资金费率，其他粒度在 ClickHouse 聚合；日线按 UTC 0 点切分
+- 因子：注册 + IC/RankIC + 分层收益
+- 回测：向量化，计入手续费与资金费率
+- 看板：先用 notebook 出图
+
+暂不做：L2 订单簿、秒级、实时流、LLM/遗传算法挖掘、Web 看板。
+
+## 开发工作流
+
+Codex 与 Claude Code 共用 `AGENTS.md` 规则，工作流来自 [coding-workflow](https://github.com/alan1-666/coding-workflow)，检查器修改先在那边回归再同步过来。
+
+```sh
+python3 scripts/workflow/workflow.py doctor
+python3 scripts/workflow/workflow.py status
+```
+
+实现任务用 `start <id> --profile python ...` 建卡，`verify` 先跑工作流自检，再跑 `.workflow/project.json` 里的 `python` profile（当前为标准库 unittest）。运行环境：macOS/Linux，Python 3.11+、Git。
+
+首次在本目录打开 Codex / Claude Code 时，需要在客户端里确认信任项目 Hooks；信任不会从 coding-workflow 继承。

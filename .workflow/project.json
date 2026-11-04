@@ -1,0 +1,10 @@
+{
+  "name": "tidewatch",
+  "version": 1,
+  "profiles": {
+    "python": [
+      {"name": "unit-tests", "argv": ["{python}", "-m", "unittest", "discover", "-s", "tests", "-t", "."], "timeout": 300}
+    ]
+  },
+  "notes": "当前无第三方依赖，用运行检查器的 Python 跑标准库 unittest；未找到测试时 unittest 以非 0 退出，不会误报通过。引入依赖后改为 .venv/bin/python，并按需加入 lint/类型检查。"
+}

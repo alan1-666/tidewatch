@@ -1,0 +1,5 @@
+.workflow/runtime/
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
