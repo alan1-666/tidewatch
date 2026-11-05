@@ -5,6 +5,7 @@ description = "加密货币量化研究平台"
 requires-python = ">=3.12"
 dependencies = [
     "clickhouse-connect",
+    "polars>=2.1.0",
 ]
 
 [dependency-groups]
