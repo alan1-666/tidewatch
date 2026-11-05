@@ -4,7 +4,7 @@
   "source_extensions": [".py", ".ts", ".tsx", ".js", ".jsx", ".go", ".sh"],
   "ignored_directories": [".git", "node_modules", "__pycache__", ".venv"],
   "excluded_paths": [".workflow/runtime/**", "dist/**", "build/**", "coverage/**", "vendor/**", "generated/**", ".pytest_cache/**", "data/raw/**"],
-  "document_paths": ["README.md", "AGENTS.md", "CLAUDE.md", "docs/tasks/*.md", "docs/design/*.md", ".workflow/roles/*.md", ".claude/agents/*.md"],
+  "document_paths": ["README.md", "AGENTS.md", "CLAUDE.md", "docs/tasks/*.md", "docs/design/*.md", "docs/specs/*.md", ".workflow/roles/*.md", ".claude/agents/*.md"],
   "legacy_source_lines": {},
   "protected_paths": ["AGENTS.md", "CLAUDE.md", ".workflow/**", ".codex/**", ".claude/**", "scripts/**", ".github/**", ".gitlab-ci.yml"]
 }

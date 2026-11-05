@@ -4,7 +4,7 @@
 
 ## 开始工作
 
-- 先读 README、`docs/design/architecture.md`（分层与时点约定）、相关源码和 `.workflow/project.json`，执行 `python3 scripts/workflow/workflow.py status`。
+- 先读 README、`docs/design/architecture.md`（分层）、`docs/specs/` 中相关模块的规格（含 `time-conventions.md`）、相关源码和 `.workflow/project.json`，执行 `python3 scripts/workflow/workflow.py status`。
 - 阅读、问答和设计无需任务卡；实现前用 `start` 固定目标、验收、允许路径、检查 profile，阅读生成的卡。
 - 首次安装本工作流及隔离临时目录里的检查器自测，可在没有业务任务时执行；后续修改工作流使用 maintenance 任务。
 - 未知接口、业务规则、权限或资金语义不能靠猜。明确影响实现的未知项；能独立推进的部分继续，依赖部分记录 blocked。
@@ -46,4 +46,5 @@
 - 审查开始时保存 `snapshot` 指纹，审查者返回同一指纹及结论；录入 `review --fingerprint ...` 时核对版本。禁止在录入旧报告前重新取指纹冒充被审版本。
 - 如实区分“本地测试通过”“客户端 Hook 实测”“Web/App 运行验收”。失败、缺命令、超时、未验证部分要说明。
 - 不因 Stop 续跑而无限尝试；受阻时记明原因，报告未完成。最终说明改动、验证和剩余限制。
+- `docs/specs/` 是各模块行为规则的唯一事实来源，按"需求 + 场景 + 对应测试"书写。业务任务交付前，把本任务新增或变更的规则合并进对应规格文件（新模块新建一份），因此建卡时 `--allow` 须包含 `docs/specs/*.md`；没有规则变化时在任务卡注明"无规格变更"。审查须核对规格与代码、测试一致。任务卡记录过程，规格记录结论。
 - `finish` 仅归档成功任务；`release` 归档未完成任务。没有用户明确指令，不提交、推送或发布。

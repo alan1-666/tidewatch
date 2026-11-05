@@ -12,7 +12,7 @@
 
 暂不做：L2 订单簿、秒级、实时流、LLM/遗传算法挖掘、Web 看板。
 
-分层、模块职责和时点约定见 [docs/design/architecture.md](docs/design/architecture.md)。
+分层与模块职责见 [docs/design/architecture.md](docs/design/architecture.md)；各模块的行为规则（需求、场景、对应测试）见 [docs/specs/](docs/specs/)，时点约定在 [time-conventions.md](docs/specs/time-conventions.md)。
 
 ## 本地环境
 
