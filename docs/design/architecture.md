@@ -4,13 +4,13 @@
 
 ## 分层
 
-上层只调用下层。I/O 只出现在 ClickHouse 存储、Binance Vision 源、批量接入、合约注册表和取数 SDK；因子、标签、成本、评测、回测是传值进、返回值出的纯函数，不碰网络和数据库，可以只用小 DataFrame 测试。配置只由 CLI 读取，并以参数形式逐层传下去。
+上层只调用下层。I/O 只出现在 ClickHouse 存储、Binance Vision 源、快照与实验清单、批量接入、合约注册表和取数 SDK；因子、标签、成本、评测、回测是传值进、返回值出的纯函数，不碰网络和数据库，可以只用小 DataFrame 测试。配置只由 CLI 读取，并以参数形式逐层传下去。
 
 ```
 ③ 编排        CLI / 流水线（唯一读取配置的地方）
 ② 上下文/呈现  可交易集合            研究报告
 ① 算子        批量接入  合约注册表  统一取数 SDK │ 因子评测  向量化回测
-⓪ 基础原语    ClickHouse 存储  Binance Vision 源 │ 因子注册  未来收益标签  成本模型
+⓪ 基础原语    ClickHouse 存储  Binance Vision 源  快照与实验清单 │ 因子注册  未来收益标签  成本模型
 ```
 
 | 模块 | 依赖 | 职责 | 规格 |
@@ -22,7 +22,8 @@
 | 成本模型 | — | 手续费（默认 taker 5bp）、滑点（先用固定 bp）、资金费率计费 | [time-conventions](../specs/time-conventions.md)（待实现） |
 | 批量接入 | 源、存储 | 解析月度 zip 并幂等写入 | [ingest](../specs/ingest.md) |
 | 合约注册表 | 源、存储 | 计价币、合约类型、首末月份、下架 | [symbol-registry](../specs/symbol-registry.md) |
-| 统一取数 SDK | 存储 | `get_bars(symbols, freq, start, end)`、`get_funding(...)`：1m 聚合，返回 polars 长表 | 待实现 |
+| 统一取数 SDK | 存储 | `get_bars(symbols, freq, start, end)`、`get_funding(...)`：1m 聚合，返回 polars 长表 | [data-api](../specs/data-api.md) |
+| 快照与实验清单 | — | 研究输入存为内容寻址的 parquet；实验清单记录快照、定义、时间策略、成交假设与全部尝试 | [snapshot](../specs/snapshot.md) |
 | 因子评测 | 因子注册、标签 | 截面 IC / RankIC 与 IR、分位分层收益、因子换手 | 待实现 |
 | 向量化回测 | 成本模型、标签 | 信号 → 多空中性权重 → 滞后成交 → 扣费用 → 净值与换手 | 待实现 |
 | 可交易集合 | 取数 SDK、合约注册表 | `universe_at(ts)`：按过去 N 天成交额取前 K | [time-conventions](../specs/time-conventions.md)（待实现） |
